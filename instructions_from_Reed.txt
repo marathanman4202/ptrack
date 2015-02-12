@@ -1,0 +1,37 @@
+2-12-15
+Hi Roy- 
+
+Below is a text file snippet of particle traces / streamlines for a small piece of the CONUS domain.  The entire thing is huge and sits on a Linux workstation in my group (but is accessible and will be the same format). First three columns are X, Y and Z location in meters, last one is time in hours.   I placed particles under rivers randomly in the 1000 x 1000 m cell then traced one particle at a time with no dispersion.  Because of the terrain following grid the cells are not completely orthogonal (but they are always rectangular / trapezoidal) so the analytical solution (i.e. Pollock or Schafer / Wilson) won't work.  I used a basic euler forward integration with a CFL-like delta-t for each particle movement.  I reflect on the bottom (no flow) BC and remove for all other BCs (this means that particles might leave the sides and I remove them from the simulation).  The ones we care about (and the ones I use in the age distributions) are only those that successfully exit near the top (I pull them out just before the ground surface, about 101m). The domain is 3342 km x 1888 km x 0.102 km but note that all dimensions are in meters, grids are variable dz with the top layer being 0.1m, then 0.3 m, 0.6m, 1m then 100 m. The 100m cells are where most of the action is for this simulation.  Particles that overshoot the bottom of the domain are reflected back up, this yields some negative z coordinates. The trick is when a particle leaves for good I also make that face's coordinates negative-- except for the top.  I would screen any particles that have negative X or Y coordinates first, they will leave on the sides.  There's not many of them since the domain is so huge.  Then particles that stagnate (long times, I just give up on them) next; then some particles that are in loosing stream segments so they will just move up and out of the domain in their first step (you see this as a one point SL with a time of zero).  
+
+The logic I'd follow is to track times from 0 to the next zero, then look at the end of that particle location.  If it's close to 100m that is an indication things went well and we should include those paths.  Here's a great example:
+
+ 0.44364114E+04  0.11498255E+06  0.10001000E+03  0.00000000E+00 
+ 0.44482245E+04  0.11491788E+06  0.22053444E+02  0.41742234E+05 
+ 0.44505162E+04  0.11481688E+06 -0.28993346E+01  0.12692743E+06 
+ 0.44525266E+04  0.11471688E+06 -0.28593950E+01  0.20703319E+06 
+ 0.44543190E+04  0.11461688E+06 -0.28256682E+01  0.28331877E+06 
+ 0.44559289E+04  0.11451667E+06  0.22630078E+01  0.35627839E+06 
+ 0.44573821E+04  0.11441624E+06  0.23458534E+01  0.42620849E+06 
+ 0.44586969E+04  0.11431578E+06  0.24235475E+01  0.49322213E+06 
+ 0.44598915E+04  0.11421531E+06  0.24966644E+01  0.55755335E+06 
+ 0.44609811E+04  0.11411482E+06  0.25656940E+01  0.61940911E+06 
+ 0.44619783E+04  0.11401431E+06  0.26310562E+01  0.67897330E+06 
+ 0.44417659E+04  0.11391177E+06  0.40944522E+01  0.75773520E+06 
+ 0.44029778E+04  0.11380711E+06  0.41012765E+01  0.85688874E+06 
+ 0.43674065E+04  0.11370242E+06  0.41080452E+01  0.95537738E+06 
+ 0.43347662E+04  0.11359770E+06  0.41147592E+01  0.10532102E+07 
+ 0.43047976E+04  0.11349295E+06  0.41214194E+01  0.11503960E+07 
+ 0.42772663E+04  0.11338816E+06  0.41280268E+01  0.12469436E+07 
+ 0.42519597E+04  0.11328334E+06  0.41345821E+01  0.13428615E+07 
+ 0.42286850E+04  0.11317848E+06  0.41410863E+01  0.14381580E+07 
+ 0.42072672E+04  0.11307360E+06  0.41475403E+01  0.15328413E+07 
+ 0.41875473E+04  0.11296867E+06  0.41539447E+01  0.16269195E+07 
+ 0.41875432E+04  0.11296853E+06  0.10415395E+03  0.16271595E+07 
+ 0.40907329E+04  0.11550452E+06  0.10001000E+03  0.00000000E+00 
+
+
+Hopefully this all makes sense.  I'll also see what Adam did here when making streamlines but it would be good to think about this from two points of view.  I'll log onto Horton (the Linux workstation where this all sits) and organize things.  What I've sent you could be just a test file I ran on my laptop or a piece of the entire run, not sure, all the final directories are organized and stored there.  I have just the end particle times local for all the paper analysis (not the full SLs).  Either way it's the same format and a great test case for your code.
+
+let me know if you have any questions; great seeing you this week!  
+
+Reed

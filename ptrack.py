@@ -3,7 +3,7 @@
 # Feb., 2015
 
 import numpy as np
-#from math import *
+from math import *
 
 path = ''
 data_file = path + 'data_ex.txt'
@@ -32,16 +32,19 @@ for i in range(1,particle_lines):
     y = data[i,1]
     z = data[i,2]
     if time == 0. and not dead_yet:                                             # He's not dead yet
-        data_path_lengths.append(
-            [x_last,y_last,z_last,time_last,s,not_dead_yet_count])
-        live_particle_count += 1
+        if z_last >= 0.:
+            data_path_lengths.append(
+                [x_last,y_last,z_last,time_last,s,not_dead_yet_count])
+            live_particle_count += 1
+        else:
+            dead_particle_count += 1
         x_last = x
         y_last = y
         z_last = z   
         time_last = time
         s = 0.
         not_dead_yet_count = 1      
-        if i == particle_lines:
+        if i == particle_lines-1:
             dead_yet = True                                                     # He feels happy      
         elif data[i+1,3] != 0.: 
             dead_yet = False                                                    # Bring out your dead!
@@ -55,7 +58,7 @@ for i in range(1,particle_lines):
         s = 0.
         not_dead_yet_count = 1  
         dead_particle_count += 1
-        if i == particle_lines:
+        if i == particle_lines-1:
             dead_yet = True                                                     # He feels happy      
         elif data[i+1,3] != 0.: 
             dead_yet = False                                                    # Bring out your dead!
@@ -71,6 +74,11 @@ for i in range(1,particle_lines):
         z_last = z     
         time_last = time
         not_dead_yet_count += 1
+        if i == particle_lines -1:
+            data_path_lengths.append(
+                [x_last,y_last,z_last,time_last,s,not_dead_yet_count])
+            live_particle_count += 1
+            dead_yet = True                                                     # He feels happy      
     if not_dead_yet_count > 499998: dead_yet = True                             # He's dead
     if x < 0. or y < 0.: dead_yet = True                                        # He's stone dead
 
